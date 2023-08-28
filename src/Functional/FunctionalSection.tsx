@@ -1,8 +1,18 @@
-// you can use this type for react children if you so choose
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
+import { TAB } from "../types";
+import { FunctionalSectionButton } from "./FunctionalSectionButton";
 
-export const FunctionalSection = () => {
+interface FunctionalSectionInterface {
+  children: ReactNode;
+  favoriteCount: number;
+  unfavoriteCount: number;
+  activeTab: TAB;
+  setActiveTab(tab: TAB): void;
+  isLoading: boolean;
+}
+
+export const FunctionalSection = (props: FunctionalSectionInterface) => {
   return (
     <section id="main-section">
       <div className="container-header">
@@ -10,22 +20,32 @@ export const FunctionalSection = () => {
         <Link to={"/class"} className="btn">
           Change to Class
         </Link>
-        <div className="selectors">
-          {/* This should display the favorited count */}
-          <div className={`selector active`} onClick={() => {}}>
-            favorited ( 12 )
-          </div>
-
-          {/* This should display the unfavorited count */}
-          <div className={`selector`} onClick={() => {}}>
-            unfavorited ( 25 )
-          </div>
-          <div className={`selector`} onClick={() => {}}>
-            create dog
-          </div>
-        </div>
+        <FunctionalSectionButton
+          tab={TAB.favorite}
+          activeTab={props.activeTab}
+          setActiveTab={(tab) => props.setActiveTab(tab)}
+          isLoading={props.isLoading}
+          count={props.favoriteCount}
+          name="favorited"
+        />
+        <FunctionalSectionButton
+          tab={TAB.unfavorite}
+          activeTab={props.activeTab}
+          setActiveTab={(tab) => props.setActiveTab(tab)}
+          isLoading={props.isLoading}
+          count={props.unfavoriteCount}
+          name="unfavorited"
+        />
+        <FunctionalSectionButton
+          tab={TAB.createdog}
+          activeTab={props.activeTab}
+          setActiveTab={(tab) => props.setActiveTab(tab)}
+          isLoading={props.isLoading}
+          count={-1}
+          name="create dog"
+        />
       </div>
-      <div className="content-container"></div>
+      <div className="content-container">{props.children}</div>
     </section>
   );
 };

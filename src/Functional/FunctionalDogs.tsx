@@ -1,92 +1,86 @@
 import { DogCard } from "../Shared/DogCard";
-import { dogPictures } from "../dog-pictures";
+import { Requests } from "../api";
+import { Dog, TAB } from "../types";
 
-// Right now these dogs are constant, but in reality we should be getting these from our server
-export const FunctionalDogs = () => {
+// QUESTION TO REVIEWER:
+// Type or interface?  They seem to work the same for this purpose.
+type FunctionalDogProps = {
+  allDogs: Dog[];
+  setAllDogs(dogs: Dog[]): void;
+  activeTab: TAB;
+  isLoading: boolean;
+  setIsLoading(status: boolean): void;
+  setFavoriteCount(count: number): void;
+  setUnfavoriteCount(count: number): void;
+};
+
+const flipDogFavoriteStatus = (workingDog: Dog, props: FunctionalDogProps) => {
+  const newDog = workingDog;
+  newDog.isFavorite = !workingDog.isFavorite;
+  Requests.updateDog(newDog);
+  const index = props.allDogs.findIndex(
+    (findDog) => findDog.id === workingDog.id
+  );
+  if (index >= 0) {
+    const newAllDogs = [...props.allDogs];
+    newAllDogs[index].isFavorite = newDog.isFavorite;
+    props.setAllDogs(newAllDogs);
+    props.setFavoriteCount(
+      newAllDogs.reduce((total, dog) => total + (dog.isFavorite ? 1 : 0), 0)
+    );
+    props.setUnfavoriteCount(
+      newAllDogs.reduce((total, dog) => total + (dog.isFavorite ? 0 : 1), 0)
+    );
+  }
+};
+
+const deleteDog = (workingDog: Dog, props: FunctionalDogProps) => {
+  Requests.deleteDog(workingDog);
+  const index = props.allDogs.findIndex(
+    (findDog) => findDog.id === workingDog.id
+  );
+  if (index >= 0) {
+    const newAllDogs = [...props.allDogs];
+    newAllDogs.splice(index, 1);
+    props.setAllDogs(newAllDogs);
+    props.setFavoriteCount(
+      newAllDogs.reduce((total, dog) => total + (dog.isFavorite ? 1 : 0), 0)
+    );
+    props.setUnfavoriteCount(
+      newAllDogs.reduce((total, dog) => total + (dog.isFavorite ? 0 : 1), 0)
+    );
+  }
+};
+
+export const FunctionalDogs = (props: FunctionalDogProps) => {
   return (
-    //  the "<> </>"" are called react fragments, it's like adding all the html inside
-    // without adding an actual html element
-    <>
-      <DogCard
-        dog={{
-          id: 1,
-          image: dogPictures.BlueHeeler,
-          description: "Example Description",
-          isFavorite: false,
-          name: "Cute Blue Heeler",
-        }}
-        key={1}
-        onTrashIconClick={() => {
-          alert("clicked trash");
-        }}
-        onHeartClick={() => {
-          alert("clicked heart");
-        }}
-        onEmptyHeartClick={() => {
-          alert("clicked empty heart");
-        }}
-        isLoading={false}
-      />
-      <DogCard
-        dog={{
-          id: 2,
-          image: dogPictures.Boxer,
-          description: "Example Description",
-          isFavorite: false,
-          name: "Cute Boxer",
-        }}
-        key={2}
-        onTrashIconClick={() => {
-          alert("clicked trash");
-        }}
-        onHeartClick={() => {
-          alert("clicked heart");
-        }}
-        onEmptyHeartClick={() => {
-          alert("clicked empty heart");
-        }}
-        isLoading={false}
-      />
-      <DogCard
-        dog={{
-          id: 3,
-          image: dogPictures.Chihuahua,
-          description: "Example Description",
-          isFavorite: false,
-          name: "Cute Chihuahua",
-        }}
-        key={3}
-        onTrashIconClick={() => {
-          alert("clicked trash");
-        }}
-        onHeartClick={() => {
-          alert("clicked heart");
-        }}
-        onEmptyHeartClick={() => {
-          alert("clicked empty heart");
-        }}
-        isLoading={false}
-      />
-      <DogCard
-        dog={{
-          id: 4,
-          image: dogPictures.Corgi,
-          description: "Example Description",
-          isFavorite: false,
-          name: "Cute Corgi",
-        }}
-        key={4}
-        onTrashIconClick={() => {
-          alert("clicked trash");
-        }}
-        onHeartClick={() => {
-          alert("clicked heart");
-        }}
-        onEmptyHeartClick={() => {
-          alert("clicked empty heart");
-        }}
-        isLoading={false}
-      />
-    </>
+    <div
+      className="content-container"
+      style={props.activeTab === TAB.createdog ? { display: "none" } : {}}
+    >
+      {props.allDogs.map((dog) =>
+        (props.activeTab != TAB.favorite &&
+          props.activeTab != TAB.unfavorite) ||
+        (dog.isFavorite && props.activeTab === TAB.favorite) ||
+        (!dog.isFavorite && props.activeTab === TAB.unfavorite) ? (
+          <DogCard
+            dog={dog}
+            key={dog.id}
+            onTrashIconClick={() => {
+              deleteDog(dog, props);
+            }}
+            onHeartClick={() => {
+              flipDogFavoriteStatus(dog, props);
+            }}
+            onEmptyHeartClick={() => {
+              flipDogFavoriteStatus(dog, props);
+            }}
+            isLoading={props.isLoading}
+          />
+        ) : (
+          ""
+        )
+      )}
+    </div>
   );
 };
