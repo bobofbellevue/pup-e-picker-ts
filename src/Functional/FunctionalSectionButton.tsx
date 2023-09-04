@@ -1,19 +1,6 @@
 import { TAB } from "../types";
 
-const makeSelectorClassName = (tab: TAB, activeTab: TAB, isLoading: boolean) => {
-  let className = "selector";
-  if (activeTab === tab) {
-    className += " active";
-  } else {
-    className += " inactive";
-  }
-  if (isLoading) {
-    className += " disabled";
-  }
-  return className;
-}
-
-interface FunctionalSectionButtonInterface {
+interface FunctionalSectionButtonProps {
   activeTab: TAB;
   tab: TAB;
   setActiveTab(tab: TAB): void;
@@ -22,17 +9,34 @@ interface FunctionalSectionButtonInterface {
   name: string;
 }
 
-export const FunctionalSectionButton = (params: FunctionalSectionButtonInterface) => {
-    return (
-      <div
-        className={makeSelectorClassName(params.tab, params.activeTab, params.isLoading)}
-        onClick={() => {
-          params.setActiveTab(params.tab);
-        }}
-      >
-        {params.count == -1
-          ? `${params.name}`
-          : `${params.name} ( ${params.count} )`}
-      </div>
-    );
-}
+export const FunctionalSectionButton = (
+  props: FunctionalSectionButtonProps
+) => {
+  const { tab, activeTab, setActiveTab, isLoading, name, count } = props;
+
+  const makeSelectorClassName = (
+    tab: TAB,
+    activeTab: TAB,
+    isLoading: boolean
+  ) => {
+    let className = "selector";
+    if (activeTab === tab) {
+      className += " active";
+    } else {
+      className += " inactive";
+    }
+    if (isLoading) {
+      className += " disabled";
+    }
+    return className;
+  };
+
+  return (
+    <div
+      className={makeSelectorClassName(tab, activeTab, isLoading)}
+      onClick={() => setActiveTab(tab)}
+    >
+      {count == -1 ? `${name}` : `${name} ( ${count} )`}
+    </div>
+  );
+};

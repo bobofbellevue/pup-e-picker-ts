@@ -7,35 +7,44 @@ import { toast } from "react-hot-toast";
 interface DogFormProps {
   activeTab: TAB;
   createDogState(dog: Dog): void;
+  setIsLoading(status: boolean): void;
 }
 
 export class ClassCreateDogForm extends Component<DogFormProps> {
   state = {
-    dog: this.clearDog(),
+    dog: this.makeEmptyDog(),
   };
 
   onSubmitDog(e: React.FormEvent<HTMLFormElement>) {
+    const { createDogState, setIsLoading } = this.props;
+    const { dog } = this.state;
     e.preventDefault();
-    const newDog = this.state.dog;
-    Requests.postDog(this.state.dog)
+    setIsLoading(true);
+    const newDog = dog;
+    Requests.postDog(dog)
       .then((data) => {
-        newDog.id = data.id; // get the new dog ID back from POST
+        // get the new dog ID back from POST
+        newDog.id = data.id;
       })
       .then(() => {
-        this.props.createDogState(newDog); // adds new dog to state over in sibling class: ClassDogs via ref in parent class, avoiding refetch from database
+        // adds new dog to state in parent class, avoiding refetch from database
+        createDogState(newDog);
         toast.success("Dog Created");
       })
       .finally(() => {
+        // clear the form
         this.setState({
-          dog: this.clearDog(),
+          dog: this.makeEmptyDog(),
         });
-      });
+        setIsLoading(false);
+      })
+      .catch((err) => console.error(err));
   }
 
-  clearDog() {
+  makeEmptyDog() {
     return {
       name: "",
-      // image: grabs image name off of first entry of dogPictures as default image
+      // grabs image name off of first entry of dogPictures as default image
       image: Object.entries(dogPictures)
         .slice(0, 1)
         .map(([, pictureValue]) => pictureValue)[0],
@@ -45,36 +54,22 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
     };
   }
 
-  onChangeDogName(e: React.ChangeEvent<HTMLInputElement>) {
-    this.setState({ dog: { ...this.state.dog, name: e.target.value } });
-  }
-
-  onChangeDogDescription(e: React.ChangeEvent<HTMLTextAreaElement>) {
-    this.setState({ dog: { ...this.state.dog, description: e.target.value } });
-  }
-
-  onChangeDogPicture(e: React.ChangeEvent<HTMLSelectElement>) {
-    this.setState({ dog: { ...this.state.dog, image: e.target.value } });
-  }
-
-  isEmptyDog() {
-    return (!this.state.dog.name);
-  }
-
   render() {
+    const { activeTab } = this.props;
+    const { dog } = this.state;
     return (
       <form
         action=""
         id="create-dog-form"
-        style={this.props.activeTab != TAB.createdog ? { display: "none" } : {}}
+        style={activeTab != "CREATEDOG" ? { display: "none" } : {}}
         onSubmit={(e) => this.onSubmitDog(e)}
       >
         <h4>Create a New Dog</h4>
         <label htmlFor="name">Dog Name</label>
         <input
           type="text"
-          onChange={(e) => this.onChangeDogName(e)}
-          value={this.state.dog.name}
+          onChange={(e) => this.setState({ dog: { ...dog, name: e.target.value } })}
+          value={dog.name}
         />
         <label htmlFor="description">Dog Description</label>
         <textarea
@@ -82,13 +77,19 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
           id=""
           cols={80}
           rows={10}
-          onChange={(e) => this.onChangeDogDescription(e)}
-          value={this.state.dog.description}
+          onChange={(e) =>
+            this.setState({
+              dog: { ...dog, description: e.target.value },
+            })
+          }
+          value={dog.description}
         />
         <label htmlFor="picture">Select an Image</label>
         <select
-          onChange={(e) => this.onChangeDogPicture(e)}
-          value={this.state.dog.image}
+          onChange={(e) =>
+            this.setState({ dog: { ...dog, image: e.target.value } })
+          }
+          value={dog.image}
         >
           {Object.entries(dogPictures).map(([label, pictureValue]) => {
             return (
@@ -98,7 +99,7 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
             );
           })}
         </select>
-        <input type="submit" value="submit" disabled={this.isEmptyDog()} />
+        <input type="submit" value="submit" disabled={!dog.name} />
       </form>
     );
   }

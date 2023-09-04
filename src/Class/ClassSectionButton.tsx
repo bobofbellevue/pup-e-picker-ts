@@ -12,29 +12,27 @@ interface ClassSectionButtonInterface {
 
 export class ClassSectionButton extends Component<ClassSectionButtonInterface> {
   makeSelectorClassName(tab: TAB) {
+    const { isLoading, activeTab } = this.props;
     let className = "selector";
-    if (this.props.activeTab === tab) {
+    if (activeTab === tab) {
       className += " active";
     } else {
       className += " inactive";
     }
-    if (this.props.isLoading) {
+    if (isLoading) {
       className += " disabled";
     }
     return className;
   }
 
   render() {
+    const { name, count, tab, setActiveTab } = this.props;
     return (
       <div
-        className={this.makeSelectorClassName(this.props.tab)}
-        onClick={() => {
-          this.props.setActiveTab(this.props.tab);
-        }}
+        className={this.makeSelectorClassName(tab)}
+        onClick={() => setActiveTab(tab)}
       >
-        {this.props.count == -1
-          ? `${this.props.name}`
-          : `${this.props.name} ( ${this.props.count} )`}
+        {count == -1 ? `${name}` : `${name} ( ${count} )`}
       </div>
     );
   }

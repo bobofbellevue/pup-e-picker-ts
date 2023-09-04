@@ -4,7 +4,7 @@
       "name": "Wilber",
       "image": "/assets/chihuahua.avif",
       "description": "magenta boo colossal unpleasant seize Tactics Florida",
-      "isFavorite": true,
+      "isFavorite": false,
       "id": 0
     },
     {
@@ -67,14 +67,14 @@
       "name": "Oral",
       "image": "/assets/chihuahua.avif",
       "description": "City Optimized Corporate Clothing Implemented Metal navigating Chair",
-      "isFavorite": true,
+      "isFavorite": false,
       "id": 15
     },
     {
       "name": "Anjali",
       "image": "/assets/chihuahua.avif",
       "description": "Bicycle canst nor henry RAM",
-      "isFavorite": true,
+      "isFavorite": false,
       "id": 16
     },
     {
@@ -97,20 +97,6 @@
       "description": "distributed Sleek nest exploit Surinam compressing straight",
       "isFavorite": false,
       "id": 19
-    },
-    {
-      "name": "Boy Dog",
-      "image": "/assets/chihuahua.avif",
-      "description": "This is Boy Dog",
-      "isFavorite": true,
-      "id": 20
-    },
-    {
-      "name": "Lady Bug",
-      "image": "/assets/chihuahua.avif",
-      "description": "Lady Bug lived to a very old age.",
-      "isFavorite": true,
-      "id": 21
     }
   ]
 }

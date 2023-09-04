@@ -1,45 +1,13 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { dogPictures } from "../dog-pictures";
-import { Dog, TAB, CreateDogStateParams } from "../types";
+import { Dog, TAB } from "../types";
 import { Requests } from "../api";
 import { toast } from "react-hot-toast";
 
-interface SubmitDogParams {
-  e: React.FormEvent<HTMLFormElement>;
-  dog: Dog;
-  createDogState(dog: Dog, params: CreateDogStateParams): void;
-  setDog(dog: Dog): void;
-  allDogs: Dog[];
-  setAllDogs(dogs: Dog[]): void;
-  setFavoriteCount(count: number): void;
-  setUnfavoriteCount(count: number): void;
-}
-
-const onSubmitDog = (params: SubmitDogParams) => {
-  params.e.preventDefault();
-  const newDog = params.dog;
-  Requests.postDog(params.dog)
-    .then((data) => {
-      newDog.id = data.id; // get the new dog ID back from POST
-    })
-    .then(() => {
-      const cdsParams: CreateDogStateParams = {
-        allDogs: params.allDogs,
-        setAllDogs: params.setAllDogs,
-        setFavoriteCount: params.setFavoriteCount,
-        setUnfavoriteCount: params.setUnfavoriteCount,
-      };
-      params.createDogState(newDog, cdsParams);
-      toast.success("Dog Created");
-    })
-    .finally(() => {
-      params.setDog(clearDog());
-    });
-};
-
-const clearDog = () => {
+const makeEmptyDog = () => {
   return {
     name: "",
+    // grabs image name off of first entry of dogPictures as default image
     image: Object.entries(dogPictures)
       .slice(0, 1)
       .map(([, pictureValue]) => pictureValue)[0],
@@ -51,33 +19,39 @@ const clearDog = () => {
 
 interface DogFormProps {
   activeTab: TAB;
-  createDogState(dog: Dog, params: CreateDogStateParams): void;
-  allDogs: Dog[];
-  setAllDogs(dogs: Dog[]): void;
-  setFavoriteCount(count: number): void;
-  setUnfavoriteCount(count: number): void;
+  createDogState(dog: Dog): void;
+  setIsLoading(status: boolean): void;
 }
 
 export const FunctionalCreateDogForm = (props: DogFormProps) => {
-  const [dog, setDog] = useState(clearDog());
+  const [dog, setDog] = useState(makeEmptyDog());
+
+  const onSubmitDog = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    props.setIsLoading(true);
+    const newDog = dog;
+    Requests.postDog(dog)
+      .then((data) => {
+        // get the new dog ID back from POST
+        newDog.id = data.id;
+      })
+      .then(() => {
+        props.createDogState(newDog);
+        toast.success("Dog Created");
+      })
+      .finally(() => {
+        setDog(makeEmptyDog());
+        props.setIsLoading(false);
+      })
+      .catch((err) => console.error(err));
+  };
 
   return (
     <form
       action=""
       id="create-dog-form"
-      style={props.activeTab != TAB.createdog ? { display: "none" } : {}}
-      onSubmit={(e) =>
-        onSubmitDog({
-          e: e,
-          dog: dog,
-          createDogState: (dog, params) => props.createDogState(dog, params),
-          setDog: (dog) => setDog(dog),
-          allDogs: props.allDogs,
-          setAllDogs: (dogs) => props.setAllDogs(dogs),
-          setFavoriteCount: (count) => props.setFavoriteCount(count),
-          setUnfavoriteCount: (count) => props.setUnfavoriteCount(count),
-        })
-      }
+      style={props.activeTab != "CREATEDOG" ? { display: "none" } : {}}
+      onSubmit={(e) => onSubmitDog(e)}
     >
       <h4>Create a New Dog</h4>
       <label htmlFor="name">Dog Name</label>

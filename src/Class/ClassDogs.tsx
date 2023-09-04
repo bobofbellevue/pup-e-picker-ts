@@ -4,101 +4,87 @@ import { Requests } from "../api";
 import { Dog, TAB } from "../types";
 
 type ClassDogProps = {
-  setFavoriteCounts(favorites: number, unfavorites: number): void;
   activeTab: TAB;
-  setLoadingState(status: boolean): void;
+  setIsLoading(status: boolean): void;
   allDogs: Dog[];
-  setAllDogsState(dogs: Dog[]): void;
+  setAllDogs(dogs: Dog[]): void;
 };
 
-type ClassDogState = {
-  isLoading: boolean;
-};
-
-export class ClassDogs extends Component<ClassDogProps, ClassDogState> {
-  state: ClassDogState = {
-    isLoading: false,
-  };
-
+export class ClassDogs extends Component<ClassDogProps> {
   refetchData = async () => {
-    this.setState({ isLoading: true });
-    this.props.setLoadingState(true);
+    const { setAllDogs, setIsLoading } = this.props;
+    setIsLoading(true);
     return Requests.getAllDogs()
       .then((dogs) => {
-        this.props.setAllDogsState(dogs);
+        setAllDogs(dogs);
       })
       .finally(() => {
-        this.setState({ isLoading: false });
-        this.props.setLoadingState(false);
-        this.setFavoriteCounts(this.props.allDogs);
-      });
+        setIsLoading(false);
+      })
+      .catch((err) => console.error(err));
   };
 
   componentDidMount(): void {
     this.refetchData();
   }
 
-  flipDogFavoriteStatus(originalDog: Dog): void {
+  flipDogFavoriteStatus = (originalDog: Dog) => {
+    const { allDogs, setAllDogs, setIsLoading } = this.props;
+    setIsLoading(true);
     const newDog = originalDog;
     newDog.isFavorite = !originalDog.isFavorite;
-    Requests.updateDog(newDog);
-    const index = this.props.allDogs.findIndex(
-      (findDog) => findDog.id === originalDog.id
-    );
-    if (index >= 0) {
-      const newAllDogs = [...this.props.allDogs];
-      newAllDogs[index].isFavorite = newDog.isFavorite;
-      this.props.setAllDogsState(newAllDogs);
-      this.setFavoriteCounts(newAllDogs);
-    }
-  }
+    Requests.updateDog(newDog)
+      .then(() => {
+        // maintain the list of dogs in state in parallel with the database to avoid a refetch
+        const index = allDogs.findIndex(
+          (findDog) => findDog.id === originalDog.id
+        );
+        if (index >= 0) {
+          const newAllDogs = [...allDogs];
+          newAllDogs[index].isFavorite = newDog.isFavorite;
+          setAllDogs(newAllDogs);
+        }
+      })
+      .finally(() => setIsLoading(false))
+      .catch((err) => console.error(err));
+  };
 
-  setFavoriteCounts(dogArray: Dog[]) {
-    this.props.setFavoriteCounts(
-      dogArray.reduce((total, dog) => total + (dog.isFavorite ? 1 : 0), 0),
-      dogArray.reduce((total, dog) => total + (dog.isFavorite ? 0 : 1), 0)
-    );
-  }
-
-  // Note: we maintain the list of dogs in state in parallel with the database to avoid a refetch
-  deleteDog(targetDog: Dog): void {
-    Requests.deleteDog(targetDog);
-    const index = this.props.allDogs.findIndex(
-      (findDog) => findDog.id === targetDog.id
-    );
-    if (index >= 0) {
-      const newAllDogs = [...this.props.allDogs];
-      newAllDogs.splice(index, 1);
-      this.props.setAllDogsState(newAllDogs);
-      this.setFavoriteCounts(newAllDogs);
-    }
-  }
+  deleteDog = (targetDog: Dog) => {
+    const { allDogs, setAllDogs, setIsLoading } = this.props;
+    setIsLoading(true);
+    Requests.deleteDog(targetDog)
+      .then(() => {
+        // maintain the list of dogs in state in parallel with the database to avoid a refetch
+        const index = allDogs.findIndex(
+          (findDog) => findDog.id === targetDog.id
+        );
+        if (index >= 0) {
+          const newAllDogs = [...allDogs];
+          newAllDogs.splice(index, 1);
+          setAllDogs(newAllDogs);
+        }
+      })
+      .finally(() => setIsLoading(false))
+      .catch((err) => console.error(err));
+  };
 
   render() {
+    const { allDogs, activeTab } = this.props;
     return (
       <div
         className="content-container"
-        style={
-          this.props.activeTab === TAB.createdog ? { display: "none" } : {}
-        }
+        style={activeTab === "CREATEDOG" ? { display: "none" } : {}}
       >
-        {this.props.allDogs.map((dog) =>
-          (this.props.activeTab != TAB.favorite &&
-            this.props.activeTab != TAB.unfavorite) ||
-          (dog.isFavorite && this.props.activeTab === TAB.favorite) ||
-          (!dog.isFavorite && this.props.activeTab === TAB.unfavorite) ? (
+        {allDogs.map((dog) =>
+          (activeTab != "FAVORITE" && activeTab != "UNFAVORITE") ||
+          (dog.isFavorite && activeTab === "FAVORITE") ||
+          (!dog.isFavorite && activeTab === "UNFAVORITE") ? (
             <DogCard
               dog={dog}
               key={dog.id}
-              onTrashIconClick={() => {
-                this.deleteDog(dog);
-              }}
-              onHeartClick={() => {
-                this.flipDogFavoriteStatus(dog);
-              }}
-              onEmptyHeartClick={() => {
-                this.flipDogFavoriteStatus(dog);
-              }}
+              onTrashIconClick={() => this.deleteDog(dog)}
+              onHeartClick={() => this.flipDogFavoriteStatus(dog)}
+              onEmptyHeartClick={() => this.flipDogFavoriteStatus(dog)}
               isLoading={false}
             />
           ) : (

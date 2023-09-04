@@ -21,7 +21,7 @@ export const FunctionalSection = (props: FunctionalSectionInterface) => {
           Change to Class
         </Link>
         <FunctionalSectionButton
-          tab={TAB.favorite}
+          tab={"FAVORITE"}
           activeTab={props.activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
           isLoading={props.isLoading}
@@ -29,7 +29,7 @@ export const FunctionalSection = (props: FunctionalSectionInterface) => {
           name="favorited"
         />
         <FunctionalSectionButton
-          tab={TAB.unfavorite}
+          tab={"UNFAVORITE"}
           activeTab={props.activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
           isLoading={props.isLoading}
@@ -37,7 +37,7 @@ export const FunctionalSection = (props: FunctionalSectionInterface) => {
           name="unfavorited"
         />
         <FunctionalSectionButton
-          tab={TAB.createdog}
+          tab={"CREATEDOG"}
           activeTab={props.activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
           isLoading={props.isLoading}

@@ -6,16 +6,10 @@ export interface Dog {
   id: string;
 }
 
-export enum TAB {
-  none = 0,
-  favorite,
-  unfavorite,
-  createdog,
-}
-
-export interface CreateDogStateParams {
-  allDogs: Dog[];
-  setAllDogs(dogs: Dog[]): void;
-  setFavoriteCount(count: number): void;
-  setUnfavoriteCount(count: number): void;
-}
+const TAB = {
+  NONE: "NONE",
+  FAVORITE: "FAVORITE",
+  UNFAVORITE: "UNFAVORITE",
+  CREATEDOG: "CREATEDOG",
+} as const;
+export type TAB = (typeof TAB)[keyof typeof TAB];

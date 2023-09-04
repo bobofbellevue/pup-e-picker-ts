@@ -3,17 +3,25 @@ import { Link } from "react-router-dom";
 import { TAB } from "../types";
 import { ClassSectionButton } from "./ClassSectionButton";
 
-interface ClassSectionInterface {
-  children: ReactNode;
+interface ClassSectionProps {
   favoriteCount: number;
   unfavoriteCount: number;
   activeTab: TAB;
   setActiveTab(tab: TAB): void;
   isLoading: boolean;
+  children: ReactNode;
 }
 
-export class ClassSection extends Component<ClassSectionInterface> {
+export class ClassSection extends Component<ClassSectionProps> {
   render() {
+    const {
+      activeTab,
+      setActiveTab,
+      isLoading,
+      favoriteCount,
+      unfavoriteCount,
+      children,
+    } = this.props;
     return (
       <section id="main-section">
         <div className="container-header">
@@ -22,31 +30,31 @@ export class ClassSection extends Component<ClassSectionInterface> {
             Change to Functional
           </Link>
           <ClassSectionButton
-            tab={TAB.favorite}
-            activeTab={this.props.activeTab}
-            setActiveTab={(tab) => this.props.setActiveTab(tab)}
-            isLoading={this.props.isLoading}
-            count={this.props.favoriteCount}
+            tab={"FAVORITE"}
+            activeTab={activeTab}
+            setActiveTab={(tab) => setActiveTab(tab)}
+            isLoading={isLoading}
+            count={favoriteCount}
             name="favorited"
           />
           <ClassSectionButton
-            tab={TAB.unfavorite}
-            activeTab={this.props.activeTab}
-            setActiveTab={(tab) => this.props.setActiveTab(tab)}
-            isLoading={this.props.isLoading}
-            count={this.props.unfavoriteCount}
+            tab={"UNFAVORITE"}
+            activeTab={activeTab}
+            setActiveTab={(tab) => setActiveTab(tab)}
+            isLoading={isLoading}
+            count={unfavoriteCount}
             name="unfavorited"
           />
           <ClassSectionButton
-            tab={TAB.createdog}
-            activeTab={this.props.activeTab}
-            setActiveTab={(tab) => this.props.setActiveTab(tab)}
-            isLoading={this.props.isLoading}
+            tab={"CREATEDOG"}
+            activeTab={activeTab}
+            setActiveTab={(tab) => setActiveTab(tab)}
+            isLoading={isLoading}
             count={-1}
             name="create dog"
           />
         </div>
-        <div className="content-container">{this.props.children}</div>
+        <div className="content-container">{children}</div>
       </section>
     );
   }
