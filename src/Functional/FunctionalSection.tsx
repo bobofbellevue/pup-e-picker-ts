@@ -3,16 +3,17 @@ import { Link } from "react-router-dom";
 import { TAB } from "../types";
 import { FunctionalSectionButton } from "./FunctionalSectionButton";
 
-interface FunctionalSectionInterface {
+type FunctionalSectionProps = {
   children: ReactNode;
   favoriteCount: number;
   unfavoriteCount: number;
   activeTab: TAB;
   setActiveTab(tab: TAB): void;
   isLoading: boolean;
-}
+};
 
-export const FunctionalSection = (props: FunctionalSectionInterface) => {
+export const FunctionalSection = (props: FunctionalSectionProps) => {
+  const { activeTab, isLoading, favoriteCount, unfavoriteCount } = props;
   return (
     <section id="main-section">
       <div className="container-header">
@@ -22,25 +23,25 @@ export const FunctionalSection = (props: FunctionalSectionInterface) => {
         </Link>
         <FunctionalSectionButton
           tab={"FAVORITE"}
-          activeTab={props.activeTab}
+          activeTab={activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
-          isLoading={props.isLoading}
-          count={props.favoriteCount}
+          isLoading={isLoading}
+          count={favoriteCount}
           name="favorited"
         />
         <FunctionalSectionButton
           tab={"UNFAVORITE"}
-          activeTab={props.activeTab}
+          activeTab={activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
-          isLoading={props.isLoading}
-          count={props.unfavoriteCount}
+          isLoading={isLoading}
+          count={unfavoriteCount}
           name="unfavorited"
         />
         <FunctionalSectionButton
-          tab={"CREATEDOG"}
-          activeTab={props.activeTab}
+          tab={"CREATE_DOG"}
+          activeTab={activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
-          isLoading={props.isLoading}
+          isLoading={isLoading}
           count={-1}
           name="create dog"
         />

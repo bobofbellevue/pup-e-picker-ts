@@ -68,17 +68,24 @@ export class ClassDogs extends Component<ClassDogProps> {
       .catch((err) => console.error(err));
   };
 
+  shouldDisplayDog(dog: Dog) {
+    const { activeTab } = this.props;
+    return (
+      (activeTab != "FAVORITE" && activeTab != "UNFAVORITE") ||
+      (dog.isFavorite && activeTab === "FAVORITE") ||
+      (!dog.isFavorite && activeTab === "UNFAVORITE")
+    );
+  }
+
   render() {
     const { allDogs, activeTab } = this.props;
+    const shouldHideContainer =
+      activeTab === "CREATE_DOG" ? { display: "none" } : {};
+
     return (
-      <div
-        className="content-container"
-        style={activeTab === "CREATEDOG" ? { display: "none" } : {}}
-      >
+      <div className="content-container" style={shouldHideContainer}>
         {allDogs.map((dog) =>
-          (activeTab != "FAVORITE" && activeTab != "UNFAVORITE") ||
-          (dog.isFavorite && activeTab === "FAVORITE") ||
-          (!dog.isFavorite && activeTab === "UNFAVORITE") ? (
+          this.shouldDisplayDog(dog) ? (
             <DogCard
               dog={dog}
               key={dog.id}

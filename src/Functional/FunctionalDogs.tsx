@@ -48,15 +48,22 @@ export const FunctionalDogs = (props: FunctionalDogProps) => {
       .finally(() => setIsLoading(false))
       .catch((err) => console.error(err));
   };
+
+  const shouldHideContainer =
+    activeTab === "CREATE_DOG" ? { display: "none" } : {};
+
+  const shouldDisplayDog = (dog: Dog) => {
+    return (
+      (activeTab != "FAVORITE" && activeTab != "UNFAVORITE") ||
+      (dog.isFavorite && activeTab === "FAVORITE") ||
+      (!dog.isFavorite && activeTab === "UNFAVORITE")
+    );
+  };
+
   return (
-    <div
-      className="content-container"
-      style={activeTab === "CREATEDOG" ? { display: "none" } : {}}
-    >
+    <div className="content-container" style={shouldHideContainer}>
       {allDogs.map((dog) =>
-        (activeTab != "FAVORITE" && activeTab != "UNFAVORITE") ||
-        (dog.isFavorite && activeTab === "FAVORITE") ||
-        (!dog.isFavorite && activeTab === "UNFAVORITE") ? (
+        shouldDisplayDog(dog) ? (
           <DogCard
             dog={dog}
             key={dog.id}

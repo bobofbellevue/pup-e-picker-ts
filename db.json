@@ -4,14 +4,14 @@
       "name": "Wilber",
       "image": "/assets/chihuahua.avif",
       "description": "magenta boo colossal unpleasant seize Tactics Florida",
-      "isFavorite": false,
+      "isFavorite": true,
       "id": 0
     },
     {
       "name": "Antonia",
       "image": "/assets/chihuahua.avif",
       "description": "ampere Metal lavender Funk Fundamental payment wireless",
-      "isFavorite": false,
+      "isFavorite": true,
       "id": 2
     },
     {
@@ -67,14 +67,14 @@
       "name": "Oral",
       "image": "/assets/chihuahua.avif",
       "description": "City Optimized Corporate Clothing Implemented Metal navigating Chair",
-      "isFavorite": false,
+      "isFavorite": true,
       "id": 15
     },
     {
       "name": "Anjali",
       "image": "/assets/chihuahua.avif",
       "description": "Bicycle canst nor henry RAM",
-      "isFavorite": false,
+      "isFavorite": true,
       "id": 16
     },
     {

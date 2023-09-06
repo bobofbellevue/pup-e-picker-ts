@@ -46,7 +46,7 @@ export class ClassSection extends Component<ClassSectionProps> {
             name="unfavorited"
           />
           <ClassSectionButton
-            tab={"CREATEDOG"}
+            tab={"CREATE_DOG"}
             activeTab={activeTab}
             setActiveTab={(tab) => setActiveTab(tab)}
             isLoading={isLoading}

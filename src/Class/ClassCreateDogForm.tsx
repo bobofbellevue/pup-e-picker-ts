@@ -1,4 +1,4 @@
-import { Component } from "react";
+import { Component, ChangeEvent } from "react";
 import { dogPictures } from "../dog-pictures";
 import { Dog, TAB } from "../types";
 import { Requests } from "../api";
@@ -8,6 +8,7 @@ interface DogFormProps {
   activeTab: TAB;
   createDogState(dog: Dog): void;
   setIsLoading(status: boolean): void;
+  isLoading: boolean;
 }
 
 export class ClassCreateDogForm extends Component<DogFormProps> {
@@ -55,21 +56,30 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
   }
 
   render() {
-    const { activeTab } = this.props;
+    const { activeTab, isLoading } = this.props;
     const { dog } = this.state;
+    const shouldHideForm = activeTab != "CREATE_DOG" ? { display: "none" } : {};
+    const onChange = (
+      e: ChangeEvent<
+        HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+      >,
+      property: string
+    ) => this.setState({ dog: { ...dog, [property]: e.target.value } });
+
     return (
       <form
         action=""
         id="create-dog-form"
-        style={activeTab != "CREATEDOG" ? { display: "none" } : {}}
+        style={shouldHideForm}
         onSubmit={(e) => this.onSubmitDog(e)}
       >
         <h4>Create a New Dog</h4>
         <label htmlFor="name">Dog Name</label>
         <input
           type="text"
-          onChange={(e) => this.setState({ dog: { ...dog, name: e.target.value } })}
+          onChange={(e) => onChange(e, "name")}
           value={dog.name}
+          disabled={isLoading}
         />
         <label htmlFor="description">Dog Description</label>
         <textarea
@@ -77,19 +87,15 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
           id=""
           cols={80}
           rows={10}
-          onChange={(e) =>
-            this.setState({
-              dog: { ...dog, description: e.target.value },
-            })
-          }
+          onChange={(e) => onChange(e, "description")}
           value={dog.description}
+          disabled={isLoading}
         />
         <label htmlFor="picture">Select an Image</label>
         <select
-          onChange={(e) =>
-            this.setState({ dog: { ...dog, image: e.target.value } })
-          }
+          onChange={(e) => onChange(e, "image")}
           value={dog.image}
+          disabled={isLoading}
         >
           {Object.entries(dogPictures).map(([label, pictureValue]) => {
             return (
@@ -99,7 +105,7 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
             );
           })}
         </select>
-        <input type="submit" value="submit" disabled={!dog.name} />
+        <input type="submit" value="submit" disabled={!dog.name || isLoading} />
       </form>
     );
   }

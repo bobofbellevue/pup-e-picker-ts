@@ -17,36 +17,49 @@ export class ClassApp extends Component {
     isLoading: false,
   };
 
-  // Adds a dog to state, avoiding a refetch to database
-  createDogState(newDog: Dog) {
-    const newAllDogs: Dog[] = [...this.state.allDogs];
-    newAllDogs.push(newDog);
-    this.setState({ allDogs: newAllDogs });
-  }
-
   render() {
+    const { allDogs, activeTab, isLoading } = this.state;
+    const favoriteCount = allDogs.reduce(
+      (total, dog: Dog) => total + (dog.isFavorite ? 1 : 0),
+      0
+    );
+    const unfavoriteCount = allDogs.length - favoriteCount;
+    const setActiveTab = (tab: TAB) =>
+      this.setState({ activeTab: tab === activeTab ? "NONE" : tab });
+    const setAllDogs = (dogs: Dog[]) => this.setState({ allDogs: dogs });
+    const setIsLoading = (status: boolean) =>
+      this.setState({ isLoading: status });
+
+    // Adds a dog to state, avoiding a refetch to database
+    const createDogState = (newDog: Dog) => {
+      const newAllDogs: Dog[] = [...allDogs];
+      newAllDogs.push(newDog);
+      this.setState({ allDogs: newAllDogs });
+    };
+
     return (
       <div className="App" style={{ backgroundColor: "goldenrod" }}>
         <header>
           <h1>pup-e-picker (Class Version)</h1>
         </header>
         <ClassSection
-          activeTab={this.state.activeTab}
-          setActiveTab={(tab: TAB) => this.setState({ activeTab: tab === this.state.activeTab ? "NONE" : tab })}
-          favoriteCount={this.state.allDogs.reduce((total, dog: Dog) => total + (dog.isFavorite ? 1 : 0), 0)}
-          unfavoriteCount={this.state.allDogs.reduce((total, dog: Dog) => total + (dog.isFavorite ? 0 : 1), 0)}
-          isLoading={this.state.isLoading}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          favoriteCount={favoriteCount}
+          unfavoriteCount={unfavoriteCount}
+          isLoading={isLoading}
         >
           <ClassDogs
-            allDogs={this.state.allDogs}
-            setAllDogs={(dogs: Dog[]) => this.setState({ allDogs: dogs } )}
-            activeTab={this.state.activeTab}
-            setIsLoading={(status: boolean) => this.setState({ isLoading: status } )}
+            allDogs={allDogs}
+            setAllDogs={setAllDogs}
+            activeTab={activeTab}
+            setIsLoading={setIsLoading}
           />
           <ClassCreateDogForm
-            activeTab={this.state.activeTab}
-            createDogState={(dog: Dog) => this.createDogState(dog)}
-            setIsLoading={(status: boolean) => this.setState({ isLoading: status } )}
+            activeTab={activeTab}
+            createDogState={createDogState}
+            setIsLoading={setIsLoading}
+            isLoading={isLoading}
           />
         </ClassSection>
       </div>

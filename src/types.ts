@@ -10,6 +10,6 @@ const TAB = {
   NONE: "NONE",
   FAVORITE: "FAVORITE",
   UNFAVORITE: "UNFAVORITE",
-  CREATEDOG: "CREATEDOG",
+  CREATE_DOG: "CREATE_DOG",
 } as const;
 export type TAB = (typeof TAB)[keyof typeof TAB];

@@ -6,9 +6,9 @@ import { Dog, TAB } from "../types";
 import { Requests } from "../api";
 
 export function FunctionalApp() {
-  const [activeTab, setActiveTab] = useState<TAB>("NONE");
-  const [isLoading, setIsLoading] = useState(false);
-  const [allDogs, setAllDogs] = useState<Dog[]>([]);
+  const [activeTab, activeTabSetter] = useState<TAB>("NONE");
+  const [isLoading, isLoadingSetter] = useState(false);
+  const [allDogs, allDogsSetter] = useState<Dog[]>([]);
 
   const refetchData = async () => {
     setIsLoading(true);
@@ -33,6 +33,16 @@ export function FunctionalApp() {
     refetchData();
   }, []);
 
+  const favoriteCount = allDogs.reduce(
+    (total, dog: Dog) => total + (dog.isFavorite ? 1 : 0),
+    0
+  );
+  const unfavoriteCount = allDogs.length - favoriteCount;
+  const setActiveTab = (tab: TAB) =>
+    activeTabSetter(tab === activeTab ? "NONE" : tab);
+  const setAllDogs = (dogs: Dog[]) => allDogsSetter(dogs);
+  const setIsLoading = (status: boolean) => isLoadingSetter(status);
+
   return (
     <div className="App" style={{ backgroundColor: "skyblue" }}>
       <header>
@@ -40,30 +50,23 @@ export function FunctionalApp() {
       </header>
       <FunctionalSection
         activeTab={activeTab}
-        setActiveTab={(tab: TAB) =>
-          setActiveTab(tab === activeTab ? "NONE" : tab)
-        }
-        favoriteCount={allDogs.reduce(
-          (total: number, dog: Dog) => total + (dog.isFavorite ? 1 : 0),
-          0
-        )}
-        unfavoriteCount={allDogs.reduce(
-          (total: number, dog: Dog) => total + (dog.isFavorite ? 0 : 1),
-          0
-        )}
+        setActiveTab={setActiveTab}
+        favoriteCount={favoriteCount}
+        unfavoriteCount={unfavoriteCount}
         isLoading={isLoading}
       >
         <FunctionalDogs
           allDogs={allDogs}
-          setAllDogs={(dogs: Dog[]) => setAllDogs(dogs)}
+          setAllDogs={setAllDogs}
           activeTab={activeTab}
           isLoading={isLoading}
-          setIsLoading={(state: boolean) => setIsLoading(state)}
+          setIsLoading={setIsLoading}
         />
         <FunctionalCreateDogForm
           activeTab={activeTab}
-          createDogState={(dog) => createDogState(dog)}
-          setIsLoading={(state: boolean) => setIsLoading(state)}
+          createDogState={createDogState}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
         />
       </FunctionalSection>
     </div>
