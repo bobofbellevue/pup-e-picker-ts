@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, FormEvent } from "react";
 import { dogPictures } from "../dog-pictures";
-import { Dog, TAB } from "../types";
+import { Dog, TAB, TabValues } from "../types";
 import { Requests } from "../api";
 import { toast } from "react-hot-toast";
 
@@ -48,7 +48,7 @@ export const FunctionalCreateDogForm = (props: DogFormProps) => {
   };
 
   const shouldHideForm =
-    props.activeTab != "CREATE_DOG" ? { display: "none" } : {};
+    props.activeTab != TabValues.CREATE_DOG ? { display: "none" } : {};
 
   const onChange = (
     e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,

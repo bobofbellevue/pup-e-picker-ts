@@ -1,6 +1,6 @@
 import { Component, ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { TAB } from "../types";
+import { TAB, TabValues } from "../types";
 import { ClassSectionButton } from "./ClassSectionButton";
 
 interface ClassSectionProps {
@@ -30,7 +30,7 @@ export class ClassSection extends Component<ClassSectionProps> {
             Change to Functional
           </Link>
           <ClassSectionButton
-            tab={"FAVORITE"}
+            tab={TabValues.FAVORITE}
             activeTab={activeTab}
             setActiveTab={(tab) => setActiveTab(tab)}
             isLoading={isLoading}
@@ -38,7 +38,7 @@ export class ClassSection extends Component<ClassSectionProps> {
             name="favorited"
           />
           <ClassSectionButton
-            tab={"UNFAVORITE"}
+            tab={TabValues.UNFAVORITE}
             activeTab={activeTab}
             setActiveTab={(tab) => setActiveTab(tab)}
             isLoading={isLoading}
@@ -46,7 +46,7 @@ export class ClassSection extends Component<ClassSectionProps> {
             name="unfavorited"
           />
           <ClassSectionButton
-            tab={"CREATE_DOG"}
+            tab={TabValues.CREATE_DOG}
             activeTab={activeTab}
             setActiveTab={(tab) => setActiveTab(tab)}
             isLoading={isLoading}

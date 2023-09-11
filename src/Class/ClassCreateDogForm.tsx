@@ -1,6 +1,6 @@
-import { Component, ChangeEvent } from "react";
+import { Component, ChangeEvent, CSSProperties } from "react";
 import { dogPictures } from "../dog-pictures";
-import { Dog, TAB } from "../types";
+import { Dog, TAB, TabValues } from "../types";
 import { Requests } from "../api";
 import { toast } from "react-hot-toast";
 
@@ -28,7 +28,6 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
         newDog.id = data.id;
       })
       .then(() => {
-        // adds new dog to state in parent class, avoiding refetch from database
         createDogState(newDog);
         toast.success("Dog Created");
       })
@@ -58,7 +57,8 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
   render() {
     const { activeTab, isLoading } = this.props;
     const { dog } = this.state;
-    const shouldHideForm = activeTab != "CREATE_DOG" ? { display: "none" } : {};
+    const formStyles: CSSProperties =
+      activeTab != TabValues.CREATE_DOG ? { display: "none" } : {};
     const onChange = (
       e: ChangeEvent<
         HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -70,7 +70,7 @@ export class ClassCreateDogForm extends Component<DogFormProps> {
       <form
         action=""
         id="create-dog-form"
-        style={shouldHideForm}
+        style={formStyles}
         onSubmit={(e) => this.onSubmitDog(e)}
       >
         <h4>Create a New Dog</h4>

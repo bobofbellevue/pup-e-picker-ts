@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { TAB } from "../types";
+import { TAB, TabValues } from "../types";
 import { FunctionalSectionButton } from "./FunctionalSectionButton";
 
 type FunctionalSectionProps = {
@@ -22,7 +22,7 @@ export const FunctionalSection = (props: FunctionalSectionProps) => {
           Change to Class
         </Link>
         <FunctionalSectionButton
-          tab={"FAVORITE"}
+          tab={TabValues.FAVORITE}
           activeTab={activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
           isLoading={isLoading}
@@ -30,7 +30,7 @@ export const FunctionalSection = (props: FunctionalSectionProps) => {
           name="favorited"
         />
         <FunctionalSectionButton
-          tab={"UNFAVORITE"}
+          tab={TabValues.UNFAVORITE}
           activeTab={activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
           isLoading={isLoading}
@@ -38,7 +38,7 @@ export const FunctionalSection = (props: FunctionalSectionProps) => {
           name="unfavorited"
         />
         <FunctionalSectionButton
-          tab={"CREATE_DOG"}
+          tab={TabValues.CREATE_DOG}
           activeTab={activeTab}
           setActiveTab={(tab) => props.setActiveTab(tab)}
           isLoading={isLoading}

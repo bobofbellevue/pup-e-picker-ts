@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { FunctionalCreateDogForm } from "./FunctionalCreateDogForm";
 import { FunctionalDogs } from "./FunctionalDogs";
 import { FunctionalSection } from "./FunctionalSection";
-import { Dog, TAB } from "../types";
+import { Dog, TAB, TabValues } from "../types";
 import { Requests } from "../api";
 
 export function FunctionalApp() {
-  const [activeTab, activeTabSetter] = useState<TAB>("NONE");
+  const [activeTab, activeTabSetter] = useState<TAB>(TabValues.NONE);
   const [isLoading, isLoadingSetter] = useState(false);
   const [allDogs, allDogsSetter] = useState<Dog[]>([]);
 
@@ -21,8 +21,34 @@ export function FunctionalApp() {
       })
       .catch((err) => console.error(err));
   };
+  const flipDogFavoriteStatus = (targetDog: Dog) => {
+    setIsLoading(true);
+    const newDog = targetDog;
+    newDog.isFavorite = !targetDog.isFavorite;
+    Requests.updateDog(newDog)
+      .then(() => {
+        const newAllDogs: Dog[] = allDogs.map((findDog) => {
+          return findDog;
+        });
+        setAllDogs(newAllDogs);
+      })
+      .finally(() => setIsLoading(false))
+      .catch((err) => console.error(err));
+  };
 
-  // update the list of dogs in state in parallel with the database to avoid a refetch
+  const deleteDog = (targetDog: Dog) => {
+    setIsLoading(true);
+    Requests.deleteDog(targetDog)
+      .then(() => {
+        const allOtherDogs = allDogs.filter(
+          (findDog) => findDog.id !== targetDog.id
+        );
+        setAllDogs(allOtherDogs);
+      })
+      .finally(() => setIsLoading(false))
+      .catch((err) => console.error(err));
+  };
+
   const createDogState = (newDog: Dog) => {
     const newAllDogs: Dog[] = [...allDogs];
     newAllDogs.push(newDog);
@@ -39,7 +65,7 @@ export function FunctionalApp() {
   );
   const unfavoriteCount = allDogs.length - favoriteCount;
   const setActiveTab = (tab: TAB) =>
-    activeTabSetter(tab === activeTab ? "NONE" : tab);
+    activeTabSetter(tab === activeTab ? TabValues.NONE : tab);
   const setAllDogs = (dogs: Dog[]) => allDogsSetter(dogs);
   const setIsLoading = (status: boolean) => isLoadingSetter(status);
 
@@ -57,10 +83,10 @@ export function FunctionalApp() {
       >
         <FunctionalDogs
           allDogs={allDogs}
-          setAllDogs={setAllDogs}
           activeTab={activeTab}
           isLoading={isLoading}
-          setIsLoading={setIsLoading}
+          deleteDog={deleteDog}
+          flipDogFavoriteStatus={flipDogFavoriteStatus}
         />
         <FunctionalCreateDogForm
           activeTab={activeTab}

@@ -1,81 +1,47 @@
 import { DogCard } from "../Shared/DogCard";
-import { Requests } from "../api";
-import { Dog, TAB } from "../types";
+import { Dog, TAB, TabValues } from "../types";
 
 type FunctionalDogProps = {
   allDogs: Dog[];
-  setAllDogs(dogs: Dog[]): void;
   activeTab: TAB;
   isLoading: boolean;
-  setIsLoading(status: boolean): void;
+  deleteDog(dog: Dog): void;
+  flipDogFavoriteStatus(dog: Dog): void;
 };
 
 export const FunctionalDogs = (props: FunctionalDogProps) => {
-  const { activeTab, allDogs, setAllDogs, isLoading, setIsLoading } = props;
-
-  const flipDogFavoriteStatus = (workingDog: Dog) => {
-    setIsLoading(true);
-    const newDog = workingDog;
-    newDog.isFavorite = !workingDog.isFavorite;
-    Requests.updateDog(newDog)
-      .then(() => {
-        const index = allDogs.findIndex(
-          (findDog) => findDog.id === workingDog.id
-        );
-        if (index >= 0) {
-          const newAllDogs = [...allDogs];
-          newAllDogs[index].isFavorite = newDog.isFavorite;
-          setAllDogs(newAllDogs);
-        }
-      })
-      .finally(() => setIsLoading(false))
-      .catch((err) => console.error(err));
-  };
-
-  const deleteDog = (workingDog: Dog) => {
-    setIsLoading(true);
-    Requests.deleteDog(workingDog)
-      .then(() => {
-        const index = allDogs.findIndex(
-          (findDog) => findDog.id === workingDog.id
-        );
-        if (index >= 0) {
-          const newAllDogs = [...allDogs];
-          newAllDogs.splice(index, 1);
-          setAllDogs(newAllDogs);
-        }
-      })
-      .finally(() => setIsLoading(false))
-      .catch((err) => console.error(err));
-  };
+  const { activeTab, allDogs, isLoading, deleteDog, flipDogFavoriteStatus } =
+    props;
 
   const shouldHideContainer =
-    activeTab === "CREATE_DOG" ? { display: "none" } : {};
+    activeTab === TabValues.CREATE_DOG ? { display: "none" } : {};
 
   const shouldDisplayDog = (dog: Dog) => {
-    return (
-      (activeTab != "FAVORITE" && activeTab != "UNFAVORITE") ||
-      (dog.isFavorite && activeTab === "FAVORITE") ||
-      (!dog.isFavorite && activeTab === "UNFAVORITE")
-    );
+    switch (activeTab) {
+      case TabValues.FAVORITE:
+        return dog.isFavorite;
+      case TabValues.UNFAVORITE:
+        return !dog.isFavorite;
+      case TabValues.NONE:
+        return true;
+    }
+    return false;
   };
+
+  const displayDogs = allDogs.filter((dog) => shouldDisplayDog(dog));
 
   return (
     <div className="content-container" style={shouldHideContainer}>
-      {allDogs.map((dog) =>
-        shouldDisplayDog(dog) ? (
-          <DogCard
-            dog={dog}
-            key={dog.id}
-            onTrashIconClick={() => deleteDog(dog)}
-            onHeartClick={() => flipDogFavoriteStatus(dog)}
-            onEmptyHeartClick={() => flipDogFavoriteStatus(dog)}
-            isLoading={isLoading}
-          />
-        ) : (
-          ""
-        )
-      )}
+      {displayDogs.map((dog) => (
+        <DogCard
+          dog={dog}
+          key={dog.id}
+          onTrashIconClick={() => deleteDog(dog)}
+          onHeartClick={() => flipDogFavoriteStatus(dog)}
+          onEmptyHeartClick={() => flipDogFavoriteStatus(dog)}
+          isLoading={isLoading}
+        />
+      ))}
     </div>
   );
 };
